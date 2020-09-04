@@ -1,0 +1,17 @@
+version: "3.7"
+
+volumes:
+  redis_data:
+
+services:
+  redis:
+    image: redis:6-alpine
+    volumes:
+      - redis_data:/var/lib/redis
+    ports:
+      - ${CLOUDTASKER_REDIS_PORT:-6379}:6379
+    command: redis-server --appendonly yes
+
+  # If app services are to be added, consider creating a
+  # "docker-compose.override.yml", and add the services there. See
+  # https://docs.docker.com/compose/reference/overview/#specifying-multiple-compose-files

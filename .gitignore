@@ -17,3 +17,13 @@
 
 # rspec failure tracking
 .rspec_status
+
+# Ignore dotenv files, exclude example files:
+*.env
+!*example.env
+
+# Ignore google cloud credentials:
+*google-cloud-credentials.json
+
+# Ignore shell history files (i.e. .byebug_history, .irb_hist, .pry_history):
+.*_hist*
