@@ -1,0 +1,52 @@
+version: "3.7"
+
+volumes:
+  gem_bundle:
+  vs_code_server:
+
+services:
+  cloudtasker: &app_config
+    image: cloudtasker/cloudtasker:development
+    build:
+      context: .
+      target: development
+      args:
+        DEVELOPER_UID: ${UID:-1000}
+        DEVELOPER_USERNAME: ${USER:-you}
+    working_dir: ${PWD:-/cloudtasker}
+    volumes:
+      - .:${PWD:-/cloudtasker} # Mount the whole workspace directory
+      - gem_bundle:/usr/local/bundle
+      - vs_code_server:/usr/src/.vscode-server
+    stdin_open: true
+    tty: true
+    depends_on:
+      - redis
+    ports:
+      - ${CLOUDTASKER_WEB_PORT:-3000}:3000
+
+    # [Optional] Required for ptrace-based debuggers like C++, Go, and Rust
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+
+    # Overrides default command so things don't shut down after the process ends.
+    command: /bin/sh -c "while sleep 1000; do :; done"
+
+    environment:
+      RAILS_LOG_TO_STDOUT: "true"
+      TEST_WORK_DIR: ${PWD:-/cloudtasker}
+
+      REDIS_URL: redis://redis:6379/0
+
+      # Google Cloud variables:
+      GOOGLE_CLOUD_PROJECT: ${CLOUDTASKER_GOOGLE_CLOUD_PROJECT:-example-gcp-project-id}
+      GOOGLE_CLOUD_CREDENTIALS: ${PWD:-/cloudtasker}/google-cloud-credentials.json
+
+      # Cloudtasker config:
+      CLOUDTASKER_QUEUE_PREFIX: 'cloudtasker-library-example'
+      CLOUDTASKER_MODE: ${CLOUDTASKER_MODE:-development}
+
+      DEBIAN_FRONTEND: dialog
+      VSCODE_CONTEXT: "yes"
