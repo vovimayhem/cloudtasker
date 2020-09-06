@@ -24,3 +24,6 @@
 
 # Ignore google cloud credentials:
 *google-cloud-credentials.json
+
+# Ignore shell history files (i.e. .byebug_history, .irb_hist, .pry_history):
+.*_hist*
